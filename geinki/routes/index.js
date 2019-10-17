@@ -2,6 +2,7 @@ const express = require('express');
 const router  = express.Router();
 const User = require('../models/User')
 const Guest = require('../models/Guest')
+const Place = require('../models/Places')
 const bcrypt = require('bcrypt')
 let bcryptSalt = 10;
 
@@ -97,13 +98,79 @@ router.post('/lead', (req, res, next) => {
 //      res.render('home', {message: "Digite o número com DDD"});
 //    }
 //   // res.render('home');
-  Guest.create({email, phone})
-  .then(guest => {
-    console.log(guest);
-    res.render('home', {message:"CUPOOONNN"})
+if (email === '' && phone === '') {
+  res.render('home', { message: "Forneça email ou telefone" });
+  return;
+}
+
+Guest.findOne({email})
+  .then((guest) => {
+    if (guest) {
+      res.render('home', {message: 'Apenas uma inscrição por usuário'})
+      return;
+    } else {
+      Guest.create({
+        email,
+        phone
+      })
+        .then(guest => {
+          // res.send()
+          console.log(guest, 'Criado com sucesso')
+          res.render('home', {message: "Entraremos em contato em breve"} ).redirect('/home')
+        })
+        .catch(error => console.log(error))
+    }
   })
   .catch(err => console.log(err))
 });
 
+
+router.get('/api/places', (req, res, next) => {
+  Place.find()
+    .then(place => {
+      console.log(place)
+      res.status(200).json(place);
+    })
+    .catch(error => console.log(error))
+});
+
+
+
+// -------------------------AUTENTICATION----------------------//
+
+router.use((req, res, next) => {
+  if(req.session.currentUser) {
+    next();
+  } else {
+    res.redirect('/login')
+  }
+});
+
+
+router.get('/admin', (req, res, next) => {
+  res.render('admin')
+})
+
+
+
+router.post('/add-place', (req, res, next) => {
+  const {name, type} = req.body;
+
+  let location = {
+    type: 'Point',
+    coordinates: [req.body.longitude, req.body.latitude]
+    };
+
+  if(name === '' || type === '' || location ==='') {
+    res.render('admin', {message: 'Preencha o endereço'})
+    return;
+  }  
+  
+  Place.create({name, type, location})
+  .then(place => {
+    res.render('admin', {message: `${place.name} saved`})
+  })
+  .catch(err => console.log(err))
+})
 
 module.exports = router;

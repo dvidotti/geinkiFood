@@ -1,0 +1,28 @@
+<h1>YOU ARE ADMIN</h1>
+
+
+
+
+<div class='right-block'>
+    <h2>ADICIONE NOVAS LOJAS</h2>
+    <form id="add-place" action="/add-place" method="POST">
+      <input id="place-name" type="text" name="name"/>
+      <input style="visibility:hidden" id="lat" type="text" name="latitude"/>
+      <input style="visibility:hidden"id="lng" type="text" name="longitude"/>
+
+      
+      <label id="search-block" for="search-place">
+        <input  type="text" id="search-place" placeholder="Endereço"/>
+        <button id="search-address-btn" type="button" onclick="codePlace()">Busque o Endereço</button>
+      </label>
+      <h2 id="place-question">Selecione o endereço abaixo?</h2>
+      <div id="suggestion-list"></div>
+      <button id="submit-add-place" type="submit">SAVE</button>
+    </form>
+    {{#if message}}
+      <h2>{{message}}</h2>
+    {{/if}}
+  </div>
+
+
+</div>

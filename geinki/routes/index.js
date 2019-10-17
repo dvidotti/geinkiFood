@@ -1,6 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const User = require('../models/User')
+const Guest = require('../models/Guest')
 const bcrypt = require('bcrypt')
 let bcryptSalt = 10;
 
@@ -74,6 +75,34 @@ router.post('/login', (req, res, next) => {
     .catch(error => {
       next(error);
     })
+});
+
+router.post('/lead', (req, res, next) => {
+  let {email, phone} = req.body;
+//   if (email === null  && phone === null) {
+//     res.render('home', {message: "Preencha ao menos um dos campos"});
+//     return;
+//   }
+
+//   let phoneSplit = phone.split('');
+//   let phoneClean = phoneSplit.map(ele => {
+//     if(ele.charCodeAt() > 47 && ele.charCodeAt() < 58) {
+//      return ele;
+//     }
+//   })
+//   phone = phoneClean.join('')
+//   console.log(phone)
+//    if (phone.length <= 11 && phone.length > 12) {
+//      console.log(entrou)
+//      res.render('home', {message: "Digite o número com DDD"});
+//    }
+//   // res.render('home');
+  Guest.create({email, phone})
+  .then(guest => {
+    console.log(guest);
+    res.render('home', {message:"CUPOOONNN"})
+  })
+  .catch(err => console.log(err))
 });
 
 
